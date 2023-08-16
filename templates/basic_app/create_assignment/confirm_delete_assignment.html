@@ -1,0 +1,21 @@
+{% extends 'basic_app/base.html' %}
+{% block content %}
+    <section class="section-hero section-hero--sm section-hero--solid">
+        <div class="hull">
+            <div class="section__content">
+                <h1>Confirm Delete Assignment of "{{ assignment.title }}"!</h1>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-form">
+        <div class="hull">
+            <form method="post">
+                {% csrf_token %}
+                <input class="btn" type="submit" value="Delete">
+                <a href="{% url 'assignment_app:view_assignments' course_id=assignment.course.id %}"
+                   class="btn">Cancel</a>
+            </form>
+        </div>
+    </section>
+{% endblock %}

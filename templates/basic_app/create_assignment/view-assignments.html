@@ -1,0 +1,50 @@
+{% extends 'basic_app/base.html' %}
+{% block content %}
+    <section class="section-hero section-hero--sm section-hero--solid">
+        <div class="hull">
+            <div class="section__content">
+                <h1>View Assignments for {{ course.title }}</h1>
+            </div>
+        </div>
+    </section>
+
+    <section class="section-boxes">
+        <div class="hull">
+        {% if user.is_authenticated %}
+            <div class="section__body">
+                <ul class="boxes boxes--fw">
+                    {% if assignments %}
+                        {% for assignment in assignments %}
+                            <li>
+                                <div class="box">
+                                    <div class="box__body">
+                                        <p>Title: {{ assignment.title }}</p>
+                                        <p>Description: {{ assignment.description }}</p>
+                                    </div>
+                                    <div class="box__action">
+                                        {% if assignment.created_by == user or user.is_staff or user.is_superuser %}
+                                            <a href="{% url 'assignment_app:delete_assignment' course_id=course.id assignment_id=assignment.id %}"
+                                               class="btn">Delete</a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </li>
+                        {% endfor %}
+                    {% else %}
+                        <p>There are no Assignments at this moment for course: {{ course.title }} !</p>
+                    {% endif %}
+                </ul>
+                <br>
+                {% if assignment.created_by == user or user.is_staff or user.is_superuser %}
+
+                    <a href="{% url 'assignment_app:create_assignment' course_id=course.id %}" class="btn">Create
+                        Assignment</a>
+                {% endif %}
+                <a href="{% url 'course_app:course_details' course_id=course.id %}" class="btn">Back</a>
+            </div>
+        {% else %}
+        <p>Please log in to view this content.</p>
+        {% endif %}
+        </div>
+    </section>
+{% endblock %}
