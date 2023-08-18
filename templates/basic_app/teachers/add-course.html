@@ -12,7 +12,7 @@
 
     <section class="section-form">
         <div class="hull">
-            <form id="create" method="post" class="form-main">
+            <form id="create" method="post" class="form-main" enctype="multipart/form-data">
                 <div class="section__body">
                     {% csrf_token %}
                     {{ form }}

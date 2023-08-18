@@ -39,13 +39,9 @@ class CommentsForm(forms.ModelForm):
 
 
 class ReviewForm(forms.ModelForm):
-    review_text = forms.CharField(validators=[review_text_validator], required=False)
+    review_text = forms.CharField(validators=[review_text_validator])
 
     class Meta:
         model = Review
         fields = ['review_text', 'rating']
-
-
-
-
 

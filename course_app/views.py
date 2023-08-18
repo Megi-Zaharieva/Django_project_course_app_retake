@@ -1,4 +1,4 @@
-
+from django.contrib.auth.mixins import UserPassesTestMixin
 from django.shortcuts import redirect
 from django.views import View
 from course_app.forms import AddCourseForm
@@ -7,12 +7,12 @@ from django.shortcuts import render, get_object_or_404
 from django.utils import timezone
 
 
-
 class AddCourseView(View):
     def get(self, request):
         form = AddCourseForm()
         context = {
-            'form': form
+            'form': form,
+            'base_url': request.build_absolute_uri('/'),
         }
         return render(request, 'basic_app/teachers/add-course.html', context)
 
@@ -23,14 +23,16 @@ class AddCourseView(View):
             course.user = request.user
             course.date = timezone.now()
 
-            if 'course_image_url' in request.FILES:
-                course.course_image_url = request.FILES['course_image_url']
+            if 'course_image' in request.FILES:
+                course.course_image = request.FILES['course_image']
+                course.image_url = f"{request.build_absolute_uri('/')}media/profile_pics/{course.course_image.name}"
 
             course.save()
             return redirect('course_app:my_courses')
 
         context = {
-            'form': form
+            'form': form,
+            'base_url': request.build_absolute_uri('/'),
         }
         return render(request, 'basic_app/teachers/add-course.html', context)
 
@@ -67,7 +69,6 @@ class EditCourseView(View):
     template_name = 'basic_app/teachers/course-edit.html'
 
     def get(self, request, course_id):
-
         if request.user.is_superuser or request.user.is_staff:
             course = get_object_or_404(CreateCourse, id=course_id)
         else:
@@ -76,7 +77,8 @@ class EditCourseView(View):
         form = AddCourseForm(instance=course)
         context = {
             'form': form,
-            'course': course
+            'course': course,
+            'base_url': request.build_absolute_uri('/'),
         }
         return render(request, self.template_name, context)
 
@@ -86,21 +88,26 @@ class EditCourseView(View):
         else:
             course = get_object_or_404(CreateCourse, id=course_id, user=request.user)
 
-        form = AddCourseForm(request.POST, instance=course)
+        form = AddCourseForm(request.POST, request.FILES, instance=course)
         if form.is_valid():
             course = form.save(commit=False)
             course.date = timezone.now()
+            if 'course_image' in request.FILES:
+                course.course_image = request.FILES['course_image']
+                course.image_url = f"{request.build_absolute_uri('/')}media/profile_pics/{course.course_image.name}"
             course.save()
             return redirect('course_app:course_details', course_id=course.id)
         context = {
             'form': form,
-            'course': course
+            'course': course,
+            'base_url': request.build_absolute_uri('/'),
         }
         return render(request, self.template_name, context)
 
 
-class DeleteCourseView(View):
-    def test_func(self, request, course_id):
+class DeleteCourseView(UserPassesTestMixin, View):
+    def test_func(self):
+        course_id = self.kwargs['course_id']
         course = get_object_or_404(CreateCourse, id=course_id)
         return self.request.user == course.user or self.request.user.is_superuser or self.request.user.is_staff
 
@@ -114,9 +121,5 @@ class DeleteCourseView(View):
 
     def post(self, request, course_id):
         course = get_object_or_404(CreateCourse, id=course_id)
-
-        if self.test_func(request, course_id):
-            course.delete()
-            return redirect('course_app:my_courses')
-        else:
-            return render(request, 'basic_app/teachers/access_denied.html')
+        course.delete()
+        return redirect('course_app:my_courses')

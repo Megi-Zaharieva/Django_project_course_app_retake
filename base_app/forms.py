@@ -2,14 +2,14 @@
 from django import forms
 from django.contrib.auth.models import User
 from base_app.models import UserProfileInfo
-from base_app.validators import password_validation, password_validator, PasswordInfo, UsernameValidator, \
+from base_app.validators import password_validation, password_validators, PasswordInfo, UsernameValidator, \
     username_validation, email_validation, first_name_validator, last_name_validator, validate_profile_pic
 
 
 class UserForm(forms.ModelForm):
 
     password = forms.CharField(widget=forms.PasswordInput(),
-                               validators=[password_validation, password_validator],
+                               validators=[password_validation, password_validators],
                                help_text=PasswordInfo().get_help_text())
 
     username = forms.CharField(help_text=UsernameValidator().get_help_text(),
@@ -25,7 +25,7 @@ class UserForm(forms.ModelForm):
 
         for field_name in self.fields:
             field = self.fields[field_name]
-            placeholder = field.label if field.label else field_name.capitalize()
+            placeholder = field.label if field.label else field_name.replace('_', ' ').capitalize()
             field.widget.attrs['placeholder'] = placeholder
             field.widget.attrs['class'] = 'form-control'
             field.label = ''
@@ -52,7 +52,7 @@ class UserProfileInfoForm(forms.ModelForm):
 
         for field_name in self.fields:
             field = self.fields[field_name]
-            placeholder = field.label if field.label else field_name.capitalize()
+            placeholder = field.label if field.label else field_name.replace('_', ' ').capitalize()
             field.widget.attrs['placeholder'] = placeholder
             field.widget.attrs['class'] = 'form-control'
             field.label = False

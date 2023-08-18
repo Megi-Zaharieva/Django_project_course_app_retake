@@ -9,7 +9,7 @@ urlpatterns = [
 
     path('teachers_list/', login_required(ListAllTeachersView.as_view()), name='teachers_list'),
     path('teacher/<int:teacher_id>/courses/', login_required(views.TeacherCoursesAndDetailsView),
-         name='teacher_courses_list'),
+     name='teacher_courses_list'),
     path('course/<int:course_id>/add_comment/', login_required(views.AddEditComment), name='add_comment'),
     path('course/<int:course_id>/edit_comment/<int:comment_id>/', login_required(views.AddEditComment),
          name='edit_comment'),

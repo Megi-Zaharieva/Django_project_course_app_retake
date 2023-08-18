@@ -54,7 +54,6 @@ class UserRegisterView(View):
                                 password=user_form.cleaned_data['password'])
             login(request, user)
 
-
             context = {
                 'user_form': user_form,
                 'profile_form': profile_form,

@@ -2,7 +2,7 @@
 {% load static %}
 {% block content %}
 
-     <section class="section-hero section-hero--sm section-hero--solid">
+    <section class="section-hero section-hero--sm section-hero--solid">
         <div class="hull">
             <div class="section__content">
                 <h1>Course list</h1>
@@ -16,11 +16,11 @@
 
     <section class="section-boxes">
         <div class="hull">
-            {% if not courses_list and user.type == "Teacher" %}
+            {% if not courses_list and request.user.userprofileinfo.type == "Teacher" %}
                 <div class="section__head">
                     <p class="h2 no-articles">It's Empty try to add some</p>
                 </div>
-            {% elif not courses_list and user.type == "Student" %}
+            {% elif not courses_list and request.user.userprofileinfo.type == "Student" %}
                 <div class="section__head">
                     <p class="h2 no-articles">No courses available at this time</p>
                 </div>
@@ -32,10 +32,15 @@
                 <div class="section__body">
                     <ul class="boxes">
                         {% for course in courses_list %}
-                           <li>
+                            <li>
                                 <div class="box">
                                     <picture class="box__image">
-                                        <img src="{{ course.course_image_url }}" alt="Course Image">
+                                        {% if course.image_url %}
+                                            <img src="{{ course.image_url }}" alt="Course Image">
+                                        {% else %}
+                                            <img src="{% static 'images/Def_online_course_image.jpg' %}"
+                                                 alt="this is a teacher image">
+                                        {% endif %}
                                     </picture>
 
                                     <div class="box__body">
@@ -59,10 +64,11 @@
                                     </div>
 
                                     <div class="box__action">
-                                        <a href="{% url 'course_app:course_details' course.id %}" class="btn">Details</a>
+                                        <a href="{% url 'course_app:course_details' course.id %}"
+                                           class="btn">Details</a>
                                     </div>
                                 </div>
-                           </li>
+                            </li>
                         {% endfor %}
                     </ul>
                 </div>

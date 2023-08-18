@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from django.core.validators import FileExtensionValidator
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 TEMPLATE_DIR = os.path.join(BASE_DIR, 'templates')
@@ -9,7 +10,6 @@ SECRET_KEY = 'django-insecure-bf(v5lu_$$&^at=+(tcd)j!6k*+8$xlj^&&=u8#4h&e#i&0rtv
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -55,7 +55,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'Project_Site.wsgi.application'
 
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -88,6 +87,7 @@ AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
+
 ]
 
 LANGUAGE_CODE = 'en-us'
@@ -97,7 +97,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 STATIC_URL = 'static/'

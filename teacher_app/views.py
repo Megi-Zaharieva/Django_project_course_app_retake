@@ -1,5 +1,6 @@
-
+from django.urls import reverse
 from django.contrib.auth.mixins import UserPassesTestMixin
+from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect
 from django.views import View
@@ -29,26 +30,34 @@ class TeacherCoursesView(View):
 
 class ListAllTeachersView(View):
     def get(self, request):
-        teachers_list = UserProfileInfo.objects.filter(type='Teacher', user__is_active=True, admin_approved='Yes')
+        teacher_profiles = UserProfileInfo.objects.filter(type='Teacher', user__is_active=True, admin_approved='Yes')
+        teacher_user_ids = [profile.user.id for profile in teacher_profiles]
+        teachers_list = User.objects.filter(id__in=teacher_user_ids)
+
+        url = reverse('teacher_app:teacher_courses_list', kwargs={'teacher_id': teachers_list[0].id})
+        print("Generated URL:", url)  # Check the printed URL in your console
 
         context = {
-            'teachers_list': teachers_list
+            'teachers_list': teachers_list,
+            'teacher_profiles': teacher_profiles,
         }
         return render(request, 'basic_app/students/teachers_list.html', context)
 
 
 def TeacherCoursesAndDetailsView(request, teacher_id):
-    teacher = UserProfileInfo.objects.get(id=teacher_id)
-    courses_list = CreateCourse.objects.filter(user=teacher.user)
+    teacher = get_object_or_404(User, id=teacher_id)
+    teacher_profile = get_object_or_404(UserProfileInfo, user=teacher)
+    courses_list = CreateCourse.objects.filter(user=teacher)
 
     for course in courses_list:
         course.average_rating = Review.objects.filter(course=course).aggregate(Avg('rating'))['rating__avg']
 
-    Context = {
+    context = {
         'teacher': teacher,
+        'teacher_profile': teacher_profile,
         'courses_list': courses_list
     }
-    return render(request, 'basic_app/teachers/course_list.html', Context)
+    return render(request, 'basic_app/teachers/course_list.html', context)
 
 
 def AddEditComment(request, course_id, comment_id=None):

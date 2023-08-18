@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from teacher_app.models import CreateCourse, Comments, Review
 from teacher_app.forms import CommentsForm, ReviewForm
 
+
 class TeachersAppTests(TestCase):
 
     def setUp(self):

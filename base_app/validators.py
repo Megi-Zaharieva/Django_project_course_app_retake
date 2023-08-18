@@ -1,8 +1,8 @@
-
+from urllib.parse import urlparse
 from django import forms
 from django.contrib.auth.password_validation import MinimumLengthValidator
 from django.core.exceptions import ValidationError
-from django.core.validators import validate_email, URLValidator
+from django.core.validators import validate_email
 from django.utils.deconstruct import deconstructible
 from django.core.files.uploadedfile import File
 
@@ -43,7 +43,7 @@ class MaxFileSizeValidator:
 
 def validate_profile_pic(value):
     if not value.name.lower().endswith('.jpg') and value != None:
-        raise ValidationError('Profile picture must be a JPG image.')
+        raise ValidationError('Only JPG images are allowed.')
 
 
 def password_validation(password):
@@ -65,7 +65,7 @@ def password_validation(password):
         raise ValidationError("Password need to have at least 1 letter, 1 digit, and 1 special character.")
 
 
-def password_validator(value):
+def password_validators(value):
     if len(value) < 10:
         raise ValidationError("Password have to be 10 or more characters.")
 
@@ -121,9 +121,7 @@ def last_name_validator(value):
         raise ValidationError("Last name have to be 3 or more characters.")
 
 
-def course_image_url_validator(value):
-    url_validator = URLValidator()
-    try:
-        url_validator(value)
-    except ValidationError:
-        raise ValidationError('Invalid image URL.')
+def validate_youtube_url(value):
+    parsed_url = urlparse(value)
+    if parsed_url.netloc != 'www.youtube.com' or parsed_url.path != '/watch':
+        raise ValidationError('Only YouTube links are allowed.')

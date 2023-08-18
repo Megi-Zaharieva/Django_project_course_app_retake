@@ -1,11 +1,10 @@
-
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
+from base_app.validators import validate_youtube_url
 
 
 class CreateCourse(models.Model):
-
     CHOICES = [
         ('Math 1', 'Math 1'),
         ('Math 2', 'Math 2'),
@@ -22,8 +21,9 @@ class CreateCourse(models.Model):
     ]
 
     title = models.CharField(blank=False, null=False, max_length=255)
-    video_url = models.URLField(default=None)
-    course_image_url = models.URLField(null=True, blank=True)
+    video_url = models.URLField(default=None, validators=[validate_youtube_url])
+    course_image = models.ImageField(upload_to='profile_pics', blank=True, )
+    image_url = models.CharField(max_length=255, blank=True)
     date = models.DateTimeField(default=timezone.now)
     type = models.CharField(blank=False, null=False, choices=CHOICES)
     description = models.TextField(blank=True, null=True, max_length=800)
@@ -31,3 +31,4 @@ class CreateCourse(models.Model):
 
     def __str__(self):
         return self.title
+

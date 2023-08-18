@@ -1,4 +1,5 @@
-
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 from django.urls import path
 from course_app.views import AddCourseView, CourseDetailsView, EditCourseView, DeleteCourseView
@@ -13,5 +14,7 @@ urlpatterns = [
     path('course/details/<int:course_id>/', login_required(CourseDetailsView.as_view()), name='course_details'),
     path('course/edit/<int:course_id>/', login_required(EditCourseView.as_view()), name='edit_course'),
     path('course/delete/<int:course_id>/', login_required(DeleteCourseView.as_view()), name='delete_course'),
-
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
